@@ -24,7 +24,15 @@ jobs:
           key: node-v1-{{ checksum "package.json" }}-{{ arch }}
           paths:
             - node_modules
-
+      - restore_cache:
+           key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
+      - run: 
+          command: bundle install --path vendor/bundle
+          working_directory: android
+      - save_cache:
+          key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
+          paths:
+            - android/vendor/bundle
       - run:
           name: jest tests
           command: |
@@ -48,6 +56,10 @@ jobs:
     working_directory: ~/lingkaranCI_test/android
     docker:
       - image: circleci/android:api-27-node8-alpha
+    environment:
+      FL_OUTPUT_DIR: output
+      FASTLANE_LANE: beta
+      _JAVA_OPTIONS: "-Xmx1500m"
     steps:
       - checkout:
           path: ~/lingkaranCI_test
@@ -64,18 +76,17 @@ jobs:
           key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
           paths:
             - vendor/bundle
-
       - run:
-          name: fastlane tests
-          command: |
-            mkdir -p test-results/fastlane
-            bundle exec fastlane test
-            mv fastlane/report.xml test-results/fastlane
-      - store_test_results:
-          path: test-results
-
-      - store_artifacts:
-          path: test-results
+        name: Build Android JS Bundle
+        working_directory: android
+        command: |
+          ./gradlew bundleReleaseJsAndAssets
+    - run:
+        name: Build Android APK
+        working_directory: android
+        command: |
+          ./gradlew assembleRelease -x bundleReleaseJsAndAssets 
+    
 
   ios:
     macos:
@@ -150,6 +161,4 @@ workflows:
       - android:
           requires:
             - node
-      - ios:
-          requires:
-            - node
+     
