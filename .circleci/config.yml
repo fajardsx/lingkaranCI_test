@@ -24,7 +24,15 @@ jobs:
           key: node-v1-{{ checksum "package.json" }}-{{ arch }}
           paths:
             - node_modules
-
+      - restore_cache:
+          key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
+      - run: 
+          command: bundle install --path vendor/bundle
+          working_directory: android
+      - save_cache:
+          key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
+          paths:
+            - android/vendor/bundle
       - run:
           name: jest tests
           command: |
@@ -56,14 +64,14 @@ jobs:
           at: ~/lingkaranCI_test
 
       - restore_cache:
-          key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
+          key: bundle-v1-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
 
       - run:
           command: bundle install
           working_directory: android
 
       - save_cache:
-          key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
+          key: bundle-v1-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
           paths:
             - vendor/bundle
 
@@ -74,15 +82,15 @@ jobs:
             bundle exec fastlane test
             mv fastlane/report.xml test-results/fastlane
       - store_test_results:
-          path: test-results
+          path: android/test-results
 
       - store_artifacts:
-          path: test-results
+          path: android/test-results
 
   ios:
     macos:
       xcode: "9.0"
-    working_directory: ~/dlingkaranCI_test
+    working_directory: ~/lingkaranCI_test
 
     # use a --login shell so our "set Ruby version" command gets picked up for later steps
     shell: /bin/bash --login -o pipefail
