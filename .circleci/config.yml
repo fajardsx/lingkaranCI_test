@@ -56,10 +56,6 @@ jobs:
     working_directory: ~/lingkaranCI_test/android
     docker:
       - image: circleci/android:api-27-node8-alpha
-    environment:
-      FL_OUTPUT_DIR: output
-      FASTLANE_LANE: beta
-      _JAVA_OPTIONS: "-Xmx1500m"
     steps:
       - checkout:
           path: ~/lingkaranCI_test
