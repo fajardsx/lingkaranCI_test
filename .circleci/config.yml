@@ -60,7 +60,7 @@ jobs:
 
       - run:
           command: bundle install
-          working_directory: ios
+          working_directory: android
 
       - save_cache:
           key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
