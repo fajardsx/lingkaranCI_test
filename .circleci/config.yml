@@ -53,7 +53,9 @@ jobs:
 
       - attach_workspace:
           at: ~/lingkaranCI_test
-      
+      - run:
+          name: chmod permissions
+          command: chmod +x ./gradlew
       - run:
           name: Build Android JS Bundle
           working_directory: ~/lingkaranCI_test/android
