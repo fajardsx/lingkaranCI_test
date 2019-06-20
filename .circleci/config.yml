@@ -58,12 +58,12 @@ jobs:
           command: chmod +x ./gradlew
       - run:
           name: Build Android JS Bundle
-          working_directory: ~/lingkaranCI_test/android
+          working_directory: android
           command: |
             ./gradlew bundleReleaseJsAndAssets
       - run:
           name: Build Android APK
-          working_directory: ~/lingkaranCI_test/android
+          working_directory: android
           command: |
             ./gradlew assembleRelease -x bundleReleaseJsAndAssets
      
