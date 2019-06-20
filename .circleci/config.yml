@@ -24,15 +24,6 @@ jobs:
           key: node-v1-{{ checksum "package.json" }}-{{ arch }}
           paths:
             - node_modules
-      - restore_cache:
-          key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
-      - run: 
-          command: bundle install --path vendor/bundle
-          working_directory: android
-      - save_cache:
-          key: bundle-v2-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
-          paths:
-            - android/vendor/bundle
       - run:
           name: jest tests
           command: |
@@ -63,29 +54,10 @@ jobs:
       - attach_workspace:
           at: ~/lingkaranCI_test
 
-      - restore_cache:
-          key: bundle-v1-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
-
-      - run:
-          command: bundle install
-          working_directory: android
-
-      - save_cache:
-          key: bundle-v1-{{ checksum "android/Gemfile.lock" }}-{{ arch }}
-          paths:
-            - vendor/bundle
-
-      - run:
-          name: fastlane tests
-          command: |
-            mkdir -p test-results/fastlane
-            bundle exec fastlane test
-            mv fastlane/report.xml test-results/fastlane
-      - store_test_results:
-          path: android/test-results
-
-      - store_artifacts:
-          path: android/test-results
+   
+      - run: npm install
+      - run: cd android && ./gradlew assembleRelease
+     
 
   ios:
     macos:
